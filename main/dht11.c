@@ -56,12 +56,12 @@ static void processResponse() {
             } else if (rx_items[i].duration0 >= 68 && rx_items[i].duration0 <= 74 && rx_items[i].level0 == 1) {
                 // bit 1, about 70us
                 int x = i - 1;
-                printf("%d", 1);
+                //printf("%d", 1);
                 allBits += pow(2, (39 - x));
                 continue;
             } else if (rx_items[i].duration0 >= 23 && rx_items[i].duration0 <= 27) {
                 // bit 0, about 26~28us
-                printf("%d", 0);
+                //printf("%d", 0);
                 continue;
             } else {
                 // for some reason, the first time after flashing, the signal is very weird
@@ -74,14 +74,15 @@ static void processResponse() {
         }
 
 
-        printf("\n\nAll bits: %llu\n", allBits);
-
         int humidity = allBits >> 24;
         int temperature = allBits >> 8 & 65535;
         int parity = allBits & 255;
 
-        printf("TEMPERATURE: %.1f\n", temperature / 10.0f);
-        printf("HUMIDITY   : %.1f\n", humidity / 10.0f);
+        printf("TEMPERATURE: %d\n", temperature);
+        printf("HUMIDITY   : %d\n", humidity);
+
+        //printf("TEMPERATURE: %.1f\n", temperature / 10.0f);
+        //printf("HUMIDITY   : %.1f\n", humidity / 10.0f);
 
         if (checkParity(allBits) != parity) {
             ESP_LOGE(TAG, "PARITY CHECK FAIL");
@@ -98,6 +99,7 @@ static void readSensor() {
     ESP_ERROR_CHECK(rmt_config(&rmt_tx_config));
 
     // request data
+    ESP_LOGI(TAG, "REQUESTING DATA");
     ESP_ERROR_CHECK(
             rmt_write_items(RMT_CHANNEL_0, wire_sequence, sizeof(wire_sequence) / sizeof(wire_sequence[0]), true));
     rmt_tx_stop(RMT_CHANNEL_0);
